@@ -1,27 +1,58 @@
+const mongoose = require('mongoose')
 require('dotenv').config();
 const mySecret = process.env['MONGO_URI']
 mongoose.connect(mySecret, ({ useNewUrlParser: true, newUnifiedTopology: true }));
 
-let Person;
+let personSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  }, age: {
+    type: Number
+  }, favoriteFoods: {
+    type: [String]
+  }
+});
+
+let Person = mongoose.model('Person', personSchema)
 
 const createAndSavePerson = (done) => {
-  done(null /*, data*/);
+  const person1 = new Person({ name: 'Neeraj', age: 26, favoriteFoods: ['tomato chutney', 'samosa'] })
+  person1.save((err, data) => {
+    if (err) {
+      console.log(err)
+    }
+    done(null, data);
+  })
 };
 
-const createManyPeople = (arrayOfPeople, done) => {
-  done(null /*, data*/);
+const createManyPeople = async (arrayOfPeople, done) => {
+  const data = await Person.create(arrayOfPeople)
+  done(null, data);
 };
 
-const findPeopleByName = (personName, done) => {
-  done(null /*, data*/);
+const findPeopleByName = async (personName, done) => {
+  const data = await Person.find({ name: personName })
+  done(null, data);
 };
 
 const findOneByFood = (food, done) => {
-  done(null /*, data*/);
+  Person.findOne({ favoriteFoods: food }, (err, data) => {
+    if (err) {
+      console.log(err)
+    }
+    done(null, data);
+  })
 };
 
 const findPersonById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findById(personId, (err, data) => {
+    if (err) {
+      console.log(err)
+    }
+    done(null, data);
+
+  })
 };
 
 const findEditThenSave = (personId, done) => {
